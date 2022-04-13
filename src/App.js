@@ -19,10 +19,13 @@ import LoginView from './routes/LoginView';
 import LogoutView from './routes/LogoutView';
 
 import { selectToken, selectUser, selectOrg, selectRole, setToken } from './state/Auth';
+import { selectMachines } from './state/Machines';
+import { selectRecords } from './state/Records';
+import { selectSchedules } from './state/Schedules';
+import { selectTasks } from './state/Tasks';
+import { selectUsers } from './state/Users';
 
 import './App.css';
-
-import { machines, records, users, tasks, schedules } from './data/dummy';
 
 const localStorageTokenKey = 'taskey-token';
 
@@ -34,6 +37,12 @@ function App() {
     const user = useSelector(selectUser);
     const org = useSelector(selectOrg);
     const role = useSelector(selectRole);
+
+    const machines = useSelector(selectMachines);
+    const records = useSelector(selectRecords);
+    const schedules = useSelector(selectSchedules);
+    const tasks = useSelector(selectTasks);
+    const users = useSelector(selectUsers);
 
     // do this only on initial page load
     useEffect(()=>{
