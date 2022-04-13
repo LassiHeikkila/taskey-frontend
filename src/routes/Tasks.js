@@ -1,5 +1,17 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
 import SyntaxHighlighter from 'react-syntax-highlighter';
+import Modal from 'react-bootstrap/Modal';
+
+import TaskCreationForm from '../components/TaskCreationForm';
+import { hasRole, RoleAdministrator } from '../lib/roles';
+import { selectRole } from '../state/Auth';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/task.go
 
@@ -21,9 +33,27 @@ const Tasks = ({tasks}) => {
     const cmdTasks = tasks.filter(task => task.content.type === 'cmd');
     const scriptTasks = tasks.filter(task => task.content.type === 'script');
 
+    const [showCreateForm, setShowCreateForm] = useState(false);
+
+    const handleCloseCreateForm = () => setShowCreateForm(false);
+    const handleOpenCreateForm = () => setShowCreateForm(true);
+
+    const role = useSelector(selectRole);
+
     return (
-        <>
-            <h2>Command Tasks</h2>
+        <Container fluid='xl'>
+            <Navbar bg='light' expand='lg'>
+                <Navbar.Brand href="/app">Tasks</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse className="justify-content-end">
+                    <Nav>
+                        <Nav.Item>
+                            <Button onClick={handleOpenCreateForm} disabled={!hasRole(role, RoleAdministrator)}>New task</Button>
+                        </Nav.Item>
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
+            <h3>Command Tasks</h3>
             <Table striped bordered hover>
                 <tr>
                     <th>Name</th>
@@ -41,7 +71,7 @@ const Tasks = ({tasks}) => {
                 ))}
             </Table>
 
-            <h2>Script Tasks</h2>
+            <h3>Script Tasks</h3>
             <Table striped bordered hover>
                 <tr>
                     <th>Name</th>
@@ -65,7 +95,12 @@ const Tasks = ({tasks}) => {
                     </tr>
                 ))}
             </Table>
-        </>
+            <Modal show={showCreateForm} onHide={handleCloseCreateForm}>
+                <Modal.Body>
+                    <TaskCreationForm />
+                </Modal.Body>
+            </Modal>
+        </Container>
     );
 }
 

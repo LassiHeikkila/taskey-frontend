@@ -1,5 +1,10 @@
 import * as React from 'react';
 import { BrowserRouter, Link, Routes, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 
 import Home from './routes/Home';
 import Tasks from './routes/Tasks';
@@ -12,20 +17,41 @@ import NotFound from './routes/NotFound';
 import LoginView from './routes/LoginView';
 import LogoutView from './routes/LogoutView';
 
+import { selectUser, selectOrg } from './state/Auth';
+
 import './App.css';
 
 import { machines, records, users, tasks, schedules } from './data/dummy';
 
 function App() {
 
-    return (
-        <div className="App">
-            <h1>Taskey</h1>
-            <nav>
-                <Link to="/login">Log in</Link>{" "}
-                <Link to="/logout">Log out</Link>
-            </nav>
+    const user = useSelector(selectUser);
+    const org = useSelector(selectOrg);
 
+    return (
+        <Container fluid='xxl'>
+            <Navbar bg='light' expand='lg'>
+                <Navbar.Brand href="/app">Taskey</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse className="justify-content-end">
+                    <Nav>
+                        { (user && org) ?
+                            <>
+                            <Nav.Item>
+                                <Nav.Link href='/change-pw'>Signed in as: {user} @ {org}</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link href="/logout">Log out</Nav.Link>
+                            </Nav.Item>
+                            </>
+                        :
+                            <Nav.Item>
+                                <Nav.Link href="/login">Log in</Nav.Link>
+                            </Nav.Item>
+                        }
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
             <Routes>
                 <Route path='/login'  element={<LoginView  />} />
                 <Route path='/logout' element={<LogoutView />} />
@@ -38,7 +64,7 @@ function App() {
                 </Route>
                 <Route path="*" element={<NotFound />} />
             </Routes>
-        </div>
+        </Container>
     );
 }
 

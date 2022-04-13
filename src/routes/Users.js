@@ -1,35 +1,41 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+
+import { getRoles, hasRole, RoleRoot } from '../lib/roles';
+import UserCreationForm from '../components/UserCreationForm';
+import { selectRole } from '../state/Auth';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/user.go
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/role.go
 
-const getRoles = (r) => {
-    const RoleUser          = (1 << 0);
-    const RoleMaintainer    = (1 << 1);
-    const RoleAdministrator = (1 << 2);
-    const RoleRoot          = (1 << 3);
-
-    var roles = [];
-    if ((r & RoleUser) > 0) {
-        roles.push("user");
-    }
-    if ((r & RoleMaintainer) > 0) {
-        roles.push("maintainer");
-    }
-    if ((r & RoleAdministrator) > 0) {
-        roles.push("administrator");
-    }
-    if ((r & RoleRoot) > 0) {
-        roles.push("root");
-    }
-
-    return roles.join(' | ');
-}
-
 const Users = ({users}) => {
+    const [showCreateForm, setShowCreateForm] = useState(false);
+
+    const handleCloseCreateForm = () => setShowCreateForm(false);
+    const handleOpenCreateForm = () => setShowCreateForm(true);
+
+    const role = useSelector(selectRole);
+
     return (
-        <>
-            <h2>Users</h2>
+        <Container fluid='xl'>
+            <Navbar bg='light' expand='lg'>
+                <Navbar.Brand href="/app">Users</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse className="justify-content-end">
+                    <Nav>
+                        <Nav.Item>
+                            <Button onClick={handleOpenCreateForm} disabled={!hasRole(role, RoleRoot)}>New user</Button>
+                        </Nav.Item>
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
 
             <Table striped bordered hover>
                 <tr>
@@ -45,7 +51,12 @@ const Users = ({users}) => {
                     </tr>
                 ))}
             </Table>
-        </>
+            <Modal show={showCreateForm} onHide={handleCloseCreateForm}>
+                <Modal.Body>
+                    <UserCreationForm />
+                </Modal.Body>
+            </Modal>
+        </Container>
     );
 }
 

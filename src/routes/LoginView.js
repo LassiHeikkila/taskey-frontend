@@ -30,9 +30,6 @@ const LoginView = () => {
         event.preventDefault();
 
         setLoginActive(true);
-        setTimeout(() => {
-            setLoginActive(false);
-        }, 5000);
 
         console.log('logging in with username: ' + username);
 
@@ -49,6 +46,8 @@ const LoginView = () => {
                         setErrMsg('');
                     }, 5000);
                 }
+
+                setLoginActive(false);
             });
     };
 

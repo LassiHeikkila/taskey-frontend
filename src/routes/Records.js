@@ -1,11 +1,18 @@
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
 import Table from 'react-bootstrap/Table';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/record.go
 
 const Records = ({records}) => {
     return (
-        <>
-            <h2>Records</h2>
+        <Container>
+            <Navbar bg='light' expand='lg'>
+                <Navbar.Brand href="/app">Records</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse className="justify-content-end">
+                </Navbar.Collapse>
+            </Navbar>
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -28,7 +35,7 @@ const Records = ({records}) => {
                 ))}
                 </tbody>
             </Table>
-        </>
+        </Container>
     );
 }
 
