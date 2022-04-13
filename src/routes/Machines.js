@@ -10,17 +10,21 @@ import Modal from 'react-bootstrap/Modal';
 
 import MachineCreationForm from '../components/MachineCreationForm';
 import { hasRole, RoleAdministrator } from '../lib/roles';
-import { selectRole } from '../state/Auth';
+import { selectToken, selectRole } from '../state/Auth';
+import { selectMachines } from '../state/Machines';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/docs/openapi.yml#L1117-L1131
 
-const Machines = ({machines}) => {
+const Machines = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
 
     const handleCloseCreateForm = () => setShowCreateForm(false);
     const handleOpenCreateForm = () => setShowCreateForm(true);
 
+    const token = useSelector(selectToken);
     const role = useSelector(selectRole);
+
+    const machines = useSelector(selectMachines);
 
     return (
         <Container fluid='xl'>

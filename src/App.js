@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Link, Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import Button from 'react-bootstrap/Button';
 
 import Home from './routes/Home';
 import Tasks from './routes/Tasks';
@@ -19,11 +18,6 @@ import LoginView from './routes/LoginView';
 import LogoutView from './routes/LogoutView';
 
 import { selectToken, selectUser, selectOrg, selectRole, setToken } from './state/Auth';
-import { selectMachines } from './state/Machines';
-import { selectRecords } from './state/Records';
-import { selectSchedules } from './state/Schedules';
-import { selectTasks } from './state/Tasks';
-import { selectUsers } from './state/Users';
 
 import './App.css';
 
@@ -38,19 +32,13 @@ function App() {
     const org = useSelector(selectOrg);
     const role = useSelector(selectRole);
 
-    const machines = useSelector(selectMachines);
-    const records = useSelector(selectRecords);
-    const schedules = useSelector(selectSchedules);
-    const tasks = useSelector(selectTasks);
-    const users = useSelector(selectUsers);
-
     // do this only on initial page load
     useEffect(()=>{
         const t = window.localStorage.getItem(localStorageTokenKey);
         if (t && t !== '') {
             dispatch(setToken(t));
         }
-    },[]);
+    },[dispatch]);
 
     // save the token to local storage whenever it changes
     useEffect(()=>{
@@ -86,11 +74,11 @@ function App() {
                 <Route path='/logout' element={<LogoutView />} />
                 { (token && token !== '') ?
                     <Route path='/app'    element={<Home       />}  >
-                        <Route path="/app/tasks"     element={<Tasks      tasks={tasks}          />} />
-                        <Route path="/app/schedules" element={<Schedules  schedules={schedules}  />} />
-                        <Route path="/app/machines"  element={<Machines   machines={machines}    />} />
-                        <Route path="/app/records"   element={<Records    records={records}      />} />
-                        <Route path="/app/users"     element={<Users      users={users}          />} />
+                        <Route path="/app/tasks"     element={<Tasks      />} />
+                        <Route path="/app/schedules" element={<Schedules  />} />
+                        <Route path="/app/machines"  element={<Machines   />} />
+                        <Route path="/app/records"   element={<Records    />} />
+                        <Route path="/app/users"     element={<Users      />} />
                     </Route>
                  :
                     <>

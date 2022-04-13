@@ -11,17 +11,19 @@ import Modal from 'react-bootstrap/Modal';
 import { getRoles, hasRole, RoleRoot } from '../lib/roles';
 import UserCreationForm from '../components/UserCreationForm';
 import { selectRole } from '../state/Auth';
+import { selectUsers } from '../state/Users';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/user.go
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/role.go
 
-const Users = ({users}) => {
+const Users = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
 
     const handleCloseCreateForm = () => setShowCreateForm(false);
     const handleOpenCreateForm = () => setShowCreateForm(true);
 
     const role = useSelector(selectRole);
+    const users = useSelector(selectUsers);
 
     return (
         <Container fluid='xl'>

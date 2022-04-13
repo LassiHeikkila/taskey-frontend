@@ -7,11 +7,14 @@ import Nav from 'react-bootstrap/Nav';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import SyntaxHighlighter from 'react-syntax-highlighter';
+
 import Modal from 'react-bootstrap/Modal';
 
 import TaskCreationForm from '../components/TaskCreationForm';
+
 import { hasRole, RoleAdministrator } from '../lib/roles';
 import { selectRole } from '../state/Auth';
+import { selectTasks } from '../state/Tasks';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/task.go
 
@@ -29,7 +32,9 @@ const getHighlightLanguage = (interpreter) => {
     }
 }
 
-const Tasks = ({tasks}) => {
+const Tasks = () => {
+    const tasks = useSelector(selectTasks);
+
     const cmdTasks = tasks.filter(task => task.content.type === 'cmd');
     const scriptTasks = tasks.filter(task => task.content.type === 'script');
 

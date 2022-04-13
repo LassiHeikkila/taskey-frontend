@@ -1,3 +1,5 @@
+import { useSelector } from 'react-redux';
+
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import TabContainer from 'react-bootstrap/TabContainer';
@@ -7,11 +9,17 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 
+import { selectToken, selectRole } from '../state/Auth';
+import { selectSchedules } from '../state/Schedules';
+
 import Schedule from '../components/Schedule';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/schedule.go
 
-const Schedules = ({schedules}) => {
+const Schedules = () => {
+    const token = useSelector(selectToken);
+    const schedules = useSelector(selectSchedules);
+
     return (
         <Container>
             <Navbar bg='light' expand='lg'>

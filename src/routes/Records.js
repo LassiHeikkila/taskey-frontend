@@ -1,10 +1,18 @@
+import { useSelector } from 'react-redux';
+
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Table from 'react-bootstrap/Table';
 
+import { selectToken, selectRole } from '../state/Auth';
+import { selectRecords } from '../state/Records';
+
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/record.go
 
-const Records = ({records}) => {
+const Records = () => {
+    const token = useSelector(selectToken);
+    const records = useSelector(selectRecords);
+
     return (
         <Container>
             <Navbar bg='light' expand='lg'>
