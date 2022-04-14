@@ -21,12 +21,8 @@ export const getToken = async (username, password) => {
             if (d.code === 200 && d.payload.token !== '') {
                 resolve(d.payload.token);
             } else {
-                resolve('');
+                throw new Error("failed to login");
             }
-        })
-        .catch(error => {
-            console.error(error);
-            resolve('');
         });
 
     });
@@ -48,10 +44,6 @@ export const checkToken = async ({token}) => {
             if (data.code === 200) {
                 resolve(true);
             }
-            return false;
-        })
-        .catch(error => {
-            console.error(error);
             resolve(false);
         });
     });

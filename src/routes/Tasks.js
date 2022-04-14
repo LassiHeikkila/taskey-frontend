@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useQuery } from 'react-query';
 
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
@@ -13,7 +14,8 @@ import Modal from 'react-bootstrap/Modal';
 import TaskCreationForm from '../components/TaskCreationForm';
 
 import { hasRole, RoleAdministrator } from '../lib/roles';
-import { selectRole } from '../state/Auth';
+import { doApiCall } from '../lib/api';
+import { selectRole, selectOrg, selectToken } from '../state/Auth';
 import { selectTasks } from '../state/Tasks';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/task.go
@@ -33,17 +35,25 @@ const getHighlightLanguage = (interpreter) => {
 }
 
 const Tasks = () => {
-    const tasks = useSelector(selectTasks);
-
-    const cmdTasks = tasks.filter(task => task.content.type === 'cmd');
-    const scriptTasks = tasks.filter(task => task.content.type === 'script');
-
     const [showCreateForm, setShowCreateForm] = useState(false);
 
     const handleCloseCreateForm = () => setShowCreateForm(false);
     const handleOpenCreateForm = () => setShowCreateForm(true);
 
+    const token = useSelector(selectToken);
+    const org = useSelector(selectOrg);
     const role = useSelector(selectRole);
+
+    const [tasks, setTasks] = useState([]);
+    const [cmdTasks, setCmdTasks] = useState([]);
+    const [scriptTasks, setScriptTasks] = useState([]);
+
+    const { status, data, error, isFetching } = useQuery('tasks', () => doApiCall(token, 'GET', org+'/tasks/').then(data => data.payload).then(pl => setTasks(pl)));
+
+    useEffect(()=>{
+        setCmdTasks(tasks.filter(task => task.content.type === 'cmd'));
+        setScriptTasks(tasks.filter(task => task.content.type === 'script'));
+    },[tasks]);
 
     return (
         <Container fluid='xl'>
@@ -58,48 +68,55 @@ const Tasks = () => {
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-            <h3>Command Tasks</h3>
-            <Table striped bordered hover>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Program & Arguments</th>
-                </tr>
-                {cmdTasks.map((task) => (
+            { status === 'loading' ? (
+                <span>Loading...</span>
+            ) : status === 'error' ? (
+                <span>Error loading data: {error.message}</span>
+            ) : (
+                <>
+                <h3>Commands</h3>
+                <Table striped bordered hover>
                     <tr>
-                        <td>{task.name}</td>
-                        <td>{task.description}</td>
-                        <SyntaxHighlighter language='console'>
-                            {task.content.program + ' ' + task.content.args.join(' ')}
-                        </SyntaxHighlighter>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Program & Arguments</th>
                     </tr>
-                ))}
-            </Table>
-
-            <h3>Script Tasks</h3>
-            <Table striped bordered hover>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Interpreter</th>
-                    <th>Script</th>
-                </tr>
-                {scriptTasks.map((task) => (
-                    <tr>
-                        <td>{task.name}</td>
-                        <td>{task.description}</td>
-                        <td>{task.content.interpreter}</td>
-                        <td>
-                            <SyntaxHighlighter
-                                language={getHighlightLanguage(task.content.interpreter)}
-                                showLineNumbers='true'
-                            >
-                                {task.content.script}
+                    {cmdTasks.map((task) => (
+                        <tr>
+                            <td>{task.name}</td>
+                            <td>{task.description}</td>
+                            <SyntaxHighlighter language='console'>
+                                {task.content.program + ' ' + task.content.args.join(' ')}
                             </SyntaxHighlighter>
-                        </td>
+                        </tr>
+                    ))}
+                </Table>
+                <h3>Scripts</h3>
+                <Table striped bordered hover>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Interpreter</th>
+                        <th>Script</th>
                     </tr>
-                ))}
-            </Table>
+                    {scriptTasks.map((task) => (
+                        <tr>
+                            <td>{task.name}</td>
+                            <td>{task.description}</td>
+                            <td>{task.content.interpreter}</td>
+                            <td>
+                                <SyntaxHighlighter
+                                    language={getHighlightLanguage(task.content.interpreter)}
+                                    showLineNumbers='true'
+                                >
+                                    {task.content.script}
+                                </SyntaxHighlighter>
+                            </td>
+                        </tr>
+                    ))}
+                </Table>
+                </>
+            )}
             <Modal show={showCreateForm} onHide={handleCloseCreateForm}>
                 <Modal.Body>
                     <TaskCreationForm />
