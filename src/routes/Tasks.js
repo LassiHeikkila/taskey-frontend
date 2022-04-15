@@ -48,17 +48,23 @@ const Tasks = () => {
     const [cmdTasks, setCmdTasks] = useState([]);
     const [scriptTasks, setScriptTasks] = useState([]);
 
-    const { status, data, error, isFetching } = useQuery('tasks', () => doApiCall(token, 'GET', org+'/tasks/').then(data => data.payload).then(pl => setTasks(pl)));
+    const { status, data, error, isFetching } = useQuery('tasks', () => doApiCall(token, 'GET', org+'/tasks/').then(data => data.payload));
 
-    useEffect(()=>{
+    useEffect(() => {
+        if (status === 'success') {
+            setTasks(data);
+        }
+    }, [status, data]);
+
+    useEffect(() => {
         setCmdTasks(tasks.filter(task => task.content.type === 'cmd'));
         setScriptTasks(tasks.filter(task => task.content.type === 'script'));
-    },[tasks]);
+    }, [tasks]);
 
     return (
         <Container fluid='xl'>
             <Navbar bg='light' expand='lg'>
-                <Navbar.Brand href="/app">Tasks</Navbar.Brand>
+                <Navbar.Brand>Tasks</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse className="justify-content-end">
                     <Nav>
@@ -76,31 +82,40 @@ const Tasks = () => {
                 <>
                 <h3>Commands</h3>
                 <Table striped bordered hover>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Program & Arguments</th>
-                    </tr>
-                    {cmdTasks.map((task) => (
+                    <thead>
                         <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Program & Arguments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {cmdTasks.map((task) => (
+                        <tr key={task.name}>
                             <td>{task.name}</td>
                             <td>{task.description}</td>
-                            <SyntaxHighlighter language='console'>
-                                {task.content.program + ' ' + task.content.args.join(' ')}
-                            </SyntaxHighlighter>
+                            <td>
+                                <SyntaxHighlighter language='console'>
+                                    {task.content.program + ' ' + task.content.args.join(' ')}
+                                </SyntaxHighlighter>
+                            </td>
                         </tr>
                     ))}
+                    </tbody>
                 </Table>
                 <h3>Scripts</h3>
                 <Table striped bordered hover>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Interpreter</th>
-                        <th>Script</th>
-                    </tr>
-                    {scriptTasks.map((task) => (
+                    <thead>
                         <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Interpreter</th>
+                            <th>Script</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {scriptTasks.map((task) => (
+                        <tr key={task.name}>
                             <td>{task.name}</td>
                             <td>{task.description}</td>
                             <td>{task.content.interpreter}</td>
@@ -114,6 +129,7 @@ const Tasks = () => {
                             </td>
                         </tr>
                     ))}
+                    </tbody>
                 </Table>
                 </>
             )}

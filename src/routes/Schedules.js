@@ -23,32 +23,30 @@ const Schedules = () => {
     return (
         <Container>
             <Navbar bg='light' expand='lg'>
-                <Navbar.Brand href="/app">Schedules</Navbar.Brand>
+                <Navbar.Brand>Schedules</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse className="justify-content-end">
                 </Navbar.Collapse>
             </Navbar>
             <TabContainer >
-                <Row>
+                {schedules.map((schedule) => (
+                <Row key={schedule.machineName}>
                     <Col sm={2}>
                         <Nav variant="pills" defaultActiveKey='' className='flex-column'>
-                            {schedules.map((schedule) => (
-                                <Nav.Item>
-                                    <Nav.Link eventKey={schedule.machineName}>{schedule.machineName}</Nav.Link>
-                                </Nav.Item>
-                            ))}
+                            <Nav.Item key={schedule.machineName}>
+                                <Nav.Link eventKey={schedule.machineName}>{schedule.machineName}</Nav.Link>
+                            </Nav.Item>
                         </Nav>
                     </Col>
                     <Col sm={9}>
                         <TabContent>
-                            {schedules.map((schedule) => (
-                                <TabPane eventKey={schedule.machineName}>
-                                    <Schedule schedule={schedule} />
-                                </TabPane>
-                            ))}
+                            <TabPane eventKey={schedule.machineName}>
+                                <Schedule schedule={schedule} />
+                            </TabPane>
                         </TabContent>
                     </Col>
                 </Row>
+                ))}
             </TabContainer>
         </Container>
     );

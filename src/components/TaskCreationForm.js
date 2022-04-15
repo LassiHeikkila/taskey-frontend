@@ -22,11 +22,6 @@ import { doApiCall } from '../lib/api';
 //     - name
 //     - content
 
-
-const formValid = (name, description, content) => {
-    return name !== '' && content;
-}
-
 const TaskCreationForm = () => {
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
@@ -50,8 +45,44 @@ const TaskCreationForm = () => {
     const [content, setContent] = useState({});
 
     useEffect(() => {
-        setFormOK(formValid(name, description, content));
-    }, [setFormOK, name, description, content]);
+        if (taskType === 'cmd') {
+            if (name !== '' && program !== '') {
+                setFormOK(true);
+            } else {
+                setFormOK(false);
+            }
+
+            setContent({
+                type: taskType,
+                combinedOutput: combinedOutput,
+                program: program,
+                args: args,
+            });
+        }
+    },[taskType, name, description, combinedOutput, program, args, setFormOK]);
+
+    useEffect(() => {
+        if (taskType === 'script') {
+            if (name !== '' && interpreter !== '' && scriptBody !== '') {
+                setFormOK(true);
+            } else {
+                setFormOK(false);
+            }
+
+            setContent({
+                type: taskType,
+                combinedOutput: combinedOutput,
+                interpreter: interpreter,
+                script: scriptBody,
+            });
+        }
+    },[taskType, name, description, combinedOutput, interpreter, scriptBody, setFormOK]);
+
+    useEffect(() => {
+        if (taskType === '') {
+            setFormOK(false);
+        }
+    }, [taskType, setFormOK]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -66,9 +97,9 @@ const TaskCreationForm = () => {
             .then(data => {
                 setSubmitActive(false);
                 if (data.code === 200) {
-                    console.log('success POSTing data:', data.payload);
+                    console.log('success POSTing data:', data);
                 } else {
-                    console.error('failed to POST data:', data.payload);
+                    console.error('failed to POST data:', data);
                 }
             })
             .catch(e => {
@@ -129,8 +160,8 @@ const TaskCreationForm = () => {
                             <Form.Control
                                 type='text'
                                 placeholder='arg1 arg2'
-                                value={args}
-                                onChange={(e) => setArgs(e.target.value)}
+                                value={args.join(' ')}
+                                onChange={(e) => setArgs(e.target.value.split(' '))}
                             />
                         </Form.Group>
                     </>

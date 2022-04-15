@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 
@@ -30,12 +30,18 @@ const Users = () => {
 
     const [users, setUsers] = useState([]);
 
-    const { status, data, error, isFetching } = useQuery('users', () => doApiCall(token, 'GET', org+'/users/').then(data => data.payload).then(pl => setUsers(pl)));
+    const { status, data, error, isFetching } = useQuery('users', () => doApiCall(token, 'GET', org+'/users/').then(data => data.payload));
+
+    useEffect(() => {
+        if (status === 'success') {
+            setUsers(data);
+        }
+    }, [status, data]);
 
     return (
         <Container fluid='xl'>
             <Navbar bg='light' expand='lg'>
-                <Navbar.Brand href="/app">Users</Navbar.Brand>
+                <Navbar.Brand>Users</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse className="justify-content-end">
                     <Nav>
@@ -51,18 +57,22 @@ const Users = () => {
                 <span>Error loading data: {error.message}</span>
             ) : (
                 <Table striped bordered hover>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Roles</th>
-                    </tr>
+                    <thead key='thead'>
+                        <tr key='thead-row'>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Roles</th>
+                        </tr>
+                    </thead>
+                    <tbody key='tbody'>
                     {users.map((user) => (
-                        <tr>
+                        <tr key={user.name}>
                             <td>{user.name}</td>
                             <td>{user.email}</td>
                             <td>{getRoles(user.role)}</td>
                         </tr>
                     ))}
+                    </tbody>
                 </Table>
             )}
             <Modal show={showCreateForm} onHide={handleCloseCreateForm}>

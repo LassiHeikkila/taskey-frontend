@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 
@@ -30,12 +30,18 @@ const Machines = () => {
 
     const [machines, setMachines] = useState([]);
 
-    const { status, data, error, isFetching } = useQuery('machines', () => doApiCall(token, 'GET', org+'/machines/').then(data => data.payload).then(pl => setMachines(pl)));
+    const { status, data, error, isFetching } = useQuery('machines', () => doApiCall(token, 'GET', org+'/machines/').then(data => data.payload));
+
+    useEffect(() => {
+        if (status === 'success') {
+            setMachines(data);
+        }
+    }, [status, data]);
 
     return (
         <Container fluid='xl'>
             <Navbar bg='light' expand='lg'>
-                <Navbar.Brand href="/app">Machines</Navbar.Brand>
+                <Navbar.Brand>Machines</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse className="justify-content-end">
                     <Nav>
@@ -51,17 +57,17 @@ const Machines = () => {
                 <span>Error loading data: {error.message}</span>
             ) : (
                 <Table striped bordered hover>
-                    <thead>
-                        <tr>
+                    <thead key='thead'>
+                        <tr key='thead-row'>
                             <th>Name</th>
                             <th>Description</th>
                             <th>OS</th>
                             <th>Arch</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody key='tbody'>
                     {machines.map((machine) => (
-                        <tr>
+                        <tr key={machine.name}>
                             <td>{machine.name}</td>
                             <td>{machine.description}</td>
                             <td>{machine.os}</td>

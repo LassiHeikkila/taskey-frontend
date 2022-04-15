@@ -11,19 +11,19 @@ const Schedule = ({schedule}) => {
             </thead>
             <tbody>
             {schedule.singleshot.map((singleshotTask) => (
-                <tr>
+                <tr key={singleshotTask.taskID + singleshotTask.when}>
                     <td>At: {singleshotTask.when}</td>
                     <td>{singleshotTask.taskID}</td>
                 </tr>
             ))}
             {schedule.periodically.map((periodicTask) => (
-                <tr>
+                <tr key={periodicTask.taskID + periodicTask.every}>
                     <td>Every: {periodicTask.every}</td>
                     <td>{periodicTask.taskID}</td>
                 </tr>
             ))}
             {schedule.cron.map((cronTask) => (
-                <tr>
+                <tr key={cronTask.taskID + cronTask.cron}>
                     <td>Cron: {cronTask.cron}</td>
                     <td>{cronTask.taskID}</td>
                 </tr>
