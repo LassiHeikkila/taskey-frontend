@@ -35,6 +35,8 @@ const Machines = () => {
     useEffect(() => {
         if (status === 'success') {
             setMachines(data);
+        } else if (status === 'error' ){
+            console.error('error fetching data:', error);
         }
     }, [status, data]);
 

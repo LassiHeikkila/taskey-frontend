@@ -20,13 +20,14 @@ const doApiCall = async (token, method, path, data) => {
                 },
                 body: data ? JSON.stringify(data) : null,
             });
+
             if (!response.ok) {
                 throw new Error('Network response was not OK');
             }
 
             return response.json();
         } catch (error) {
-            throw new Error("request failed with:", error)
+            throw new Error('request failed with: ' + error.message);
         }
 };
 

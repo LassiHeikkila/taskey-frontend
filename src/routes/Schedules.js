@@ -28,26 +28,28 @@ const Schedules = () => {
                 <Navbar.Collapse className="justify-content-end">
                 </Navbar.Collapse>
             </Navbar>
-            <TabContainer >
-                {schedules.map((schedule) => (
-                <Row key={schedule.machineName}>
+            <Row>
+                <TabContainer >
                     <Col sm={2}>
-                        <Nav variant="pills" defaultActiveKey='' className='flex-column'>
-                            <Nav.Item key={schedule.machineName}>
+                    {schedules.map((schedule) => (
+                        <Nav variant="pills" defaultActiveKey='' className='flex-column' key={schedule.machineName + "-nav"}>
+                            <Nav.Item key={schedule.machineName + "-navitem"}>
                                 <Nav.Link eventKey={schedule.machineName}>{schedule.machineName}</Nav.Link>
                             </Nav.Item>
                         </Nav>
+                    ))}
                     </Col>
-                    <Col sm={9}>
-                        <TabContent>
-                            <TabPane eventKey={schedule.machineName}>
+                    <Col sm={10}>
+                    {schedules.map((schedule) => (
+                        <TabContent key={schedule.machineName + "-tabcontent"}>
+                            <TabPane eventKey={schedule.machineName} key={schedule.machineName + "-tabpane"}>
                                 <Schedule schedule={schedule} />
                             </TabPane>
                         </TabContent>
+                    ))}
                     </Col>
-                </Row>
-                ))}
-            </TabContainer>
+                </TabContainer>
+            </Row>
         </Container>
     );
 };
