@@ -8,14 +8,12 @@ import TabContent from 'react-bootstrap/TabContent';
 import TabPane from 'react-bootstrap/TabPane';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import Table from 'react-bootstrap/Table';
-import Tab from 'react-bootstrap/Tab';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import RecordsTable from '../components/RecordsTable';
 
-import { selectToken, selectRole, selectOrg } from '../state/Auth';
+import { selectToken, selectOrg } from '../state/Auth';
 import { doApiCall } from '../lib/api';
 
 // https://github.com/LassiHeikkila/taskey/blob/main/pkg/types/record.go
@@ -23,21 +21,18 @@ import { doApiCall } from '../lib/api';
 const Records = () => {
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
-    const role = useSelector(selectRole);
 
     const [machines, setMachines] = useState([]);
-    const [chosenMachine, setChosenMachine] = useState('');
-    const [records, setRecords] = useState({});
 
-    const { status, data, error, isFetching } = useQuery('machines', () => doApiCall(token, 'GET', org+'/machines/').then(d => d.payload));
+    const { status, data, error } = useQuery('machines', () => doApiCall(token, 'GET', org+'/machines/').then(d => d.payload));
 
     useEffect(() => {
         if (status === 'success' && data) {
             setMachines(data);
         } else if (status === 'error' ){
-            console.error('error fetching data:', error);
+            console.error('error fetching data:', error.message);
         }
-    }, [status, data]);
+    }, [status, data, error]);
 
     return (
         <Container>

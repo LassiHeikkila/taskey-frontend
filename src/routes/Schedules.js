@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useQuery } from 'react-query';
 
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
@@ -9,8 +11,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 
-import { selectToken, selectRole } from '../state/Auth';
-import { selectSchedules } from '../state/Schedules';
+import { selectToken, selectOrg } from '../state/Auth';
+import { doApiCall } from '../lib/api';
 
 import Schedule from '../components/Schedule';
 
@@ -18,7 +20,19 @@ import Schedule from '../components/Schedule';
 
 const Schedules = () => {
     const token = useSelector(selectToken);
-    const schedules = useSelector(selectSchedules);
+    const org = useSelector(selectOrg);
+
+    const [machines, setMachines] = useState([]);
+
+    const { status, data, error } = useQuery('machines', () => doApiCall(token, 'GET', org+'/machines/').then(d => d.payload));
+
+    useEffect(() => {
+        if (status === 'success' && data) {
+            setMachines(data);
+        } else if (status === 'error' ){
+            console.error('error fetching data:', error.message);
+        }
+    }, [status, data, error]);
 
     return (
         <Container>
@@ -31,19 +45,19 @@ const Schedules = () => {
             <Row>
                 <TabContainer >
                     <Col sm={2}>
-                    {schedules.map((schedule) => (
-                        <Nav variant="pills" defaultActiveKey='' className='flex-column' key={schedule.machineName + "-nav"}>
-                            <Nav.Item key={schedule.machineName + "-navitem"}>
-                                <Nav.Link eventKey={schedule.machineName}>{schedule.machineName}</Nav.Link>
+                    {machines.map((machine) => (
+                        <Nav variant="pills" defaultActiveKey='' className='flex-column' key={machine.name + "-nav"}>
+                            <Nav.Item key={machine.name + "-navitem"}>
+                                <Nav.Link eventKey={machine.name}>{machine.name}</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     ))}
                     </Col>
                     <Col sm={10}>
-                    {schedules.map((schedule) => (
-                        <TabContent key={schedule.machineName + "-tabcontent"}>
-                            <TabPane eventKey={schedule.machineName} key={schedule.machineName + "-tabpane"}>
-                                <Schedule schedule={schedule} />
+                    {machines.map((machine) => (
+                        <TabContent key={machine.name + "-tabcontent"}>
+                            <TabPane eventKey={machine.name} key={machine.name + "-tabpane"}>
+                                <Schedule machine={machine.name} />
                             </TabPane>
                         </TabContent>
                     ))}

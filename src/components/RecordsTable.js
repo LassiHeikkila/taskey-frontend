@@ -14,7 +14,7 @@ const RecordsTable = ({machine}) => {
 
     const [records, setRecords] = useState([]);
 
-    const { status, data, error, isFetching } = useQuery(
+    const { status, data, error } = useQuery(
         ['records', machine],
         () => doApiCall(
             token,
@@ -27,10 +27,10 @@ const RecordsTable = ({machine}) => {
     useEffect(() => {
         if (status === 'success' && data) {
             setRecords(data);
-        } else if (status === 'error' ){
+        } else if (status === 'error' ) {
             console.error('error fetching data:', error);
         }
-    }, [status, data]);
+    }, [status, data, error]);
 
     return (
         <>
