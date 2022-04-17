@@ -30,7 +30,7 @@ const RecordsTable = ({machine}) => {
         if (status === 'success' && data) {
             setRecords(data);
         } else if (status === 'error' ) {
-            console.error('error fetching data:', error);
+            console.error('error fetching data:', error.message);
         }
     }, [status, data, error]);
 

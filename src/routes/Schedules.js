@@ -57,7 +57,7 @@ const Schedules = () => {
                     {machines.map((machine) => (
                         <TabContent key={machine.name + "-tabcontent"}>
                             <TabPane eventKey={machine.name} key={machine.name + "-tabpane"}>
-                                <Schedule machine={machine.name} />
+                                <Schedule machineName={machine.name} />
                             </TabPane>
                         </TabContent>
                     ))}
