@@ -35,6 +35,8 @@ const Users = () => {
     useEffect(() => {
         if (status === 'success') {
             setUsers(data);
+        } else if (status === 'error' ) {
+            console.error('error fetching data:', error.message);
         }
     }, [status, data]);
 

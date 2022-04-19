@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 
+import Select from 'react-select';
+
 import { selectToken, selectOrg } from '../state/Auth';
 import { doApiCall } from '../lib/api';
+import ScheduleItemFormEntry from './ScheduleItemFormEntry';
 
 const ScheduleCreationForm = ({machineName}) => {
     const queryClient = useQueryClient;
@@ -18,18 +21,7 @@ const ScheduleCreationForm = ({machineName}) => {
     const [formOK, setFormOK] = useState(false);
     const [submitActive, setSubmitActive] = useState(false);
 
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-
-    const [taskType, setTaskType] = useState('');
-    const [combinedOutput, setCombinedOutput] = useState(false);
-    // cmd type task
-    const [program, setProgram] = useState('');
-    const [args, setArgs] = useState([]);
-
-    // script type task
-    const [interpreter, setInterpreter] = useState('');
-    const [scriptBody, setScriptBody] = useState('');
+    const [tasks, setTasks] = useState([]);
 
     const [content, setContent] = useState({});
 
@@ -63,92 +55,57 @@ const ScheduleCreationForm = ({machineName}) => {
         });
     };
 
+    const [scheduledTasks, setScheduledTasks] = useState([]);
+
+    const addTaskDefinitionField = () => {
+        let st = [...scheduledTasks];
+        st.push({});
+        setScheduledTasks(st);
+    }
+    const removeTaskDefinitionField = (i) => {
+        let st = [...scheduledTasks];
+        st.splice(i, 1);
+        setScheduledTasks(st);
+    }
+
+    const { status, data, error, isFetching } = useQuery(
+        'tasks',
+        () => doApiCall(
+            token,
+            'GET',
+            org+'/tasks/'
+        )
+        .then(data => data.payload)
+    );
+
+    useEffect(() => {
+        if (status === 'success') {
+            setTasks(data);
+        } else if (status === 'error' ) {
+            console.error('error fetching data:', error.message);
+        }
+    }, [status, data]);
+
     return (
         <>
         { submitActive ? (
             <Spinner animation="border" variant="primary" />
         ) : (
             <Form onSubmit={handleSubmit}>
-                <Form.Group>
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control
-                        type='text'
-                        placeholder='Enter task name'
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    <Form.Text className='text-muted'>Name for machine</Form.Text>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control
-                        type='text'
-                        placeholder='Enter description'
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                    />
-                    <Form.Text className='text-muted'>(Optional) description for task</Form.Text>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label>Task type</Form.Label>
-                    <Form.Select
-                        aria-label="Default select example"
-                        onChange={(e) => setTaskType(e.target.value)}
-                    >
-                        <option value=''>Task type</option>
-                        <option value="cmd">Command</option>
-                        <option value="script">Script</option>
-                    </Form.Select>
-                </Form.Group>
-                { taskType === 'cmd' ? (
+                {scheduledTasks.map((e, i) => (
                     <>
-                        <Form.Group>
-                            <Form.Label>Program</Form.Label>
-                            <Form.Control
-                                type='text'
-                                placeholder='/usr/bin/command'
-                                value={program}
-                                onChange={(e) => setProgram(e.target.value)}
-                            />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>Arguments</Form.Label>
-                            <Form.Control
-                                type='text'
-                                placeholder='arg1 arg2'
-                                value={args.join(' ')}
-                                onChange={(e) => setArgs(e.target.value.split(' '))}
-                            />
-                        </Form.Group>
+                        <ScheduleItemFormEntry
+                            taskOptions={tasks}
+                            onChange={e => {
+                                console.debug('schedule item set:', e);
+                            }}
+                        />
+                        <Button type='button' onClick={removeTaskDefinitionField.bind(i)}>-</Button>
                     </>
-                ) : taskType === 'script' ? (
-                    <>
-                        <Form.Group>
-                            <Form.Label>Interpreter</Form.Label>
-                            <Form.Control
-                                type='text'
-                                placeholder='bash'
-                                value={interpreter}
-                                onChange={(e) => setInterpreter(e.target.value)}
-                            />
-                            <Form.Text className='text-muted'>Interpreter for running script</Form.Text>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>Script body</Form.Label>
-                            <Form.Control
-                                type='text'
-                                as='textarea'
-                                rows={10}
-                                placeholder='echo "success"'
-                                value={scriptBody}
-                                onChange={(e) => setScriptBody(e.target.value)}
-                            />
-                            <Form.Text className='text-muted'>Interpreter for running script</Form.Text>
-                        </Form.Group>
-                    </>
-                ) : (<></>) }
-
-                <Button type="submit" disabled={!formOK || submitActive}>Submit</Button>
+                ))}
+                <br />
+                <Button type='button' onClick={addTaskDefinitionField}>+</Button>
+                <Button type='submit' disabled={!formOK || submitActive}>Submit</Button>
             </Form>
         )}
         </>

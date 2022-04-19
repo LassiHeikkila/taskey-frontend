@@ -53,6 +53,8 @@ const Tasks = () => {
     useEffect(() => {
         if (status === 'success') {
             setTasks(data);
+        } else if (status === 'error' ) {
+            console.error('error fetching data:', error.message);
         }
     }, [status, data]);
 
