@@ -26,9 +26,19 @@ const ScheduleItemFormEntry = (props) => {
 
     const handleScheduleEntryTypeChange = (e) => {
         setScheduleEntryType(e.value);
+        setWhenArg('');
     }
 
-    const handleWhenArgChange = (e) => {
+    const handleWhenArgChangeSingleshot = (e) => {
+        const dt = new Date(e.target.value);
+        setWhenArg(dt.toISOString());
+    }
+
+    const handleWhenArgChangePeriodic = (e) => {
+        setWhenArg(e.target.value);
+    }
+
+    const handleWhenArgChangeCron = (e) => {
         setWhenArg(e.target.value);
     }
 
@@ -37,14 +47,19 @@ const ScheduleItemFormEntry = (props) => {
     }
 
     useEffect(() => {
-        props.onChange(constructScheduleItem());
+        const item = constructScheduleItem();
+        if (item) {
+            props.onChange(item);
+        }
     }, [selectedTask, whenArg, scheduleEntryType]);
 
     const constructScheduleItem = () => {
-        return {
-            type: scheduleEntryType,
-            when: whenArg,
-            taskID: selectedTask.name,
+        if (scheduleEntryType && whenArg && selectedTask) {
+            return {
+                type: scheduleEntryType,
+                when: whenArg,
+                taskID: selectedTask.name,
+            }
         }
     }
 
@@ -52,11 +67,29 @@ const ScheduleItemFormEntry = (props) => {
         <>
             <Form.Group>
                 <Form.Label>When</Form.Label>
-                <Form.Control
-                    type='text'
-                    placeholder='Schedule'
-                    onChange={handleWhenArgChange}
-                />
+                { scheduleEntryType === Singleshot ? (
+                    <Form.Control
+                        type='datetime-local'
+                        placeholder='at'
+                        onChange={handleWhenArgChangeSingleshot}
+                    />
+                ) : scheduleEntryType === Periodic ? (
+                    <Form.Control
+                        type='text'
+                        placeholder='every'
+                        onChange={handleWhenArgChangePeriodic}
+                    />
+                ) : scheduleEntryType === Cron ? (
+                    <Form.Control
+                        type='text'
+                        placeholder='0 12 * * * '
+                        onChange={handleWhenArgChangeCron}
+                    />
+                ) : (
+                    <>
+                    </>
+                )
+                }
             </Form.Group>
             <Form.Group>
                 <Form.Label>Entry type</Form.Label>
