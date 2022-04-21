@@ -9,7 +9,7 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-import { getRoles, hasRole, RoleRoot } from '../lib/roles';
+import { getRoles, hasRole, RoleRoot, RoleAdministrator } from '../lib/roles';
 import { doApiCall } from '../lib/api';
 import UserCreationForm from '../components/UserCreationForm';
 import { selectRole, selectOrg, selectToken } from '../state/Auth';
@@ -64,6 +64,8 @@ const Users = () => {
                             <th>Name</th>
                             <th>Email</th>
                             <th>Roles</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody key='tbody'>
@@ -72,6 +74,8 @@ const Users = () => {
                             <td>{user.name}</td>
                             <td>{user.email}</td>
                             <td>{getRoles(user.role)}</td>
+                            <td><Button onClick={console.info('i want to edit!')} disabled={!hasRole(role, RoleAdministrator)}>Edit</Button></td>
+                            <td><Button onClick={console.info('i want to delete!')} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
                         </tr>
                     ))}
                     </tbody>

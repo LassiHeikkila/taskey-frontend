@@ -65,6 +65,8 @@ const Machines = () => {
                             <th>Description</th>
                             <th>OS</th>
                             <th>Arch</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody key='tbody'>
@@ -74,6 +76,8 @@ const Machines = () => {
                             <td>{machine.description}</td>
                             <td>{machine.os}</td>
                             <td>{machine.arch}</td>
+                            <td><Button onClick={console.info('i want to edit!')} disabled={!hasRole(role, RoleAdministrator)}>Edit</Button></td>
+                            <td><Button onClick={console.info('i want to delete!')} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
                         </tr>
                     ))}
                     </tbody>

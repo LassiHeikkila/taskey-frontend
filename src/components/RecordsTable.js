@@ -54,7 +54,7 @@ const RecordsTable = ({machine}) => {
                         <th>Timestamp</th>
                         <th>Status</th>
                         <th>Output</th>
-                        <th>Actions</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,7 +66,7 @@ const RecordsTable = ({machine}) => {
                         <td>{record.executedAt}</td>
                         <td>{record.status}</td>
                         <td>{record.output}</td>
-                        <Button onClick={handleDeleteRecord(record.id)} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button>
+                        <td><Button onClick={handleDeleteRecord(record.id)} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
                     </tr>
                 ))}
                 </tbody>

@@ -13,7 +13,7 @@ import Modal from 'react-bootstrap/Modal';
 
 import TaskCreationForm from '../components/TaskCreationForm';
 
-import { hasRole, RoleAdministrator } from '../lib/roles';
+import { hasRole, RoleAdministrator, RoleMaintainer } from '../lib/roles';
 import { doApiCall } from '../lib/api';
 import { selectRole, selectOrg, selectToken } from '../state/Auth';
 import { selectTasks } from '../state/Tasks';
@@ -89,6 +89,8 @@ const Tasks = () => {
                             <th>Name</th>
                             <th>Description</th>
                             <th>Program & Arguments</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -101,6 +103,8 @@ const Tasks = () => {
                                     {task.content.program + ' ' + task.content.args.join(' ')}
                                 </SyntaxHighlighter>
                             </td>
+                            <td><Button onClick={console.info('i want to edit!')} disabled={!hasRole(role, RoleMaintainer)}>Edit</Button></td>
+                            <td><Button onClick={console.info('i want to delete!')} disabled={!hasRole(role, RoleMaintainer)}>Delete</Button></td>
                         </tr>
                     ))}
                     </tbody>
@@ -113,6 +117,8 @@ const Tasks = () => {
                             <th>Description</th>
                             <th>Interpreter</th>
                             <th>Script</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -129,6 +135,8 @@ const Tasks = () => {
                                     {task.content.script}
                                 </SyntaxHighlighter>
                             </td>
+                            <td><Button onClick={console.info('i want to edit!')} disabled={!hasRole(role, RoleMaintainer)}>Edit</Button></td>
+                            <td><Button onClick={console.info('i want to delete!')} disabled={!hasRole(role, RoleMaintainer)}>Delete</Button></td>
                         </tr>
                     ))}
                     </tbody>
