@@ -22,25 +22,25 @@ import { doApiCall } from '../lib/api';
 //     - name
 //     - content
 
-const TaskCreationForm = () => {
+const TaskCreationForm = (props) => {
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
 
     const [formOK, setFormOK] = useState(false);
     const [submitActive, setSubmitActive] = useState(false);
 
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
+    const [name, setName] = useState(props.task?.name ?? '');
+    const [description, setDescription] = useState(props.task?.description ?? '');
 
-    const [taskType, setTaskType] = useState('');
-    const [combinedOutput, setCombinedOutput] = useState(false);
+    const [taskType, setTaskType] = useState(props.task?.content.type ?? '');
+    const [combinedOutput, setCombinedOutput] = useState(props.task?.content.combinedOutput ?? '');
     // cmd type task
-    const [program, setProgram] = useState('');
-    const [args, setArgs] = useState([]);
+    const [program, setProgram] = useState(props.task?.content.program ?? '');
+    const [args, setArgs] = useState(props.task?.content.args ?? []);
 
     // script type task
-    const [interpreter, setInterpreter] = useState('');
-    const [scriptBody, setScriptBody] = useState('');
+    const [interpreter, setInterpreter] = useState(props.task?.content.interpreter ?? '');
+    const [scriptBody, setScriptBody] = useState(props.task?.content.script ?? '');
 
     const [content, setContent] = useState({});
 
@@ -93,17 +93,24 @@ const TaskCreationForm = () => {
 
         setSubmitActive(true);
 
-        doApiCall(token, 'POST', org+'/tasks/', {name: name, description: description, content: content})
+        var method = 'POST';
+        var endpoint = org+'/tasks/';
+        if (props.id) {
+            method = 'PUT';
+            endpoint = org+'/tasks/'+props.id+'/';
+        }
+
+        doApiCall(token, method, endpoint, {name: name, description: description, content: content})
             .then(data => {
                 setSubmitActive(false);
                 if (data.code === 200) {
-                    console.log('success POSTing data:', data);
+                    console.log('success submitting data:', data);
                 } else {
-                    console.error('failed to POST data:', data);
+                    console.error('failed to submit data:', data);
                 }
             })
             .catch(e => {
-                console.error('error posting form:', e);
+                console.error('error submitting form:', e);
             });
     };
 
@@ -138,6 +145,7 @@ const TaskCreationForm = () => {
                     <Form.Select
                         aria-label="Default select example"
                         onChange={(e) => setTaskType(e.target.value)}
+                        defaultValue={taskType}
                     >
                         <option value=''>Task type</option>
                         <option value="cmd">Command</option>

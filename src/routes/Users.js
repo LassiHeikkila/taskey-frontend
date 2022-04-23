@@ -20,15 +20,20 @@ import { selectUsers } from '../state/Users';
 
 const Users = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [showEditForm, setShowEditForm] = useState(false);
 
     const handleCloseCreateForm = () => setShowCreateForm(false);
     const handleOpenCreateForm = () => setShowCreateForm(true);
+
+    const handleCloseEditForm = () => setShowEditForm(false);
+    const handleOpenEditForm = () => setShowEditForm(true);
 
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
     const role = useSelector(selectRole);
 
     const [users, setUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState({});
 
     const { status, data, error, isFetching } = useQuery('users', () => doApiCall(token, 'GET', org+'/users/').then(data => data.payload));
 
@@ -74,8 +79,8 @@ const Users = () => {
                             <td>{user.name}</td>
                             <td>{user.email}</td>
                             <td>{getRoles(user.role)}</td>
-                            <td><Button onClick={console.info('i want to edit!')} disabled={!hasRole(role, RoleAdministrator)}>Edit</Button></td>
-                            <td><Button onClick={console.info('i want to delete!')} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
+                            <td><Button onClick={() => {setSelectedUser(user); handleOpenEditForm()}} disabled={!hasRole(role, RoleAdministrator)}>Edit</Button></td>
+                            <td><Button onClick={() => {console.info('i want to delete!')}} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
                         </tr>
                     ))}
                     </tbody>
@@ -84,6 +89,11 @@ const Users = () => {
             <Modal show={showCreateForm} onHide={handleCloseCreateForm}>
                 <Modal.Body>
                     <UserCreationForm />
+                </Modal.Body>
+            </Modal>
+            <Modal show={showEditForm} onHide={handleCloseEditForm}>
+                <Modal.Body>
+                    <UserCreationForm id={selectedUser.name} user={selectedUser} />
                 </Modal.Body>
             </Modal>
         </Container>

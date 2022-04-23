@@ -66,7 +66,7 @@ const RecordsTable = ({machine}) => {
                         <td>{record.executedAt}</td>
                         <td>{record.status}</td>
                         <td>{record.output}</td>
-                        <td><Button onClick={handleDeleteRecord(record.id)} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
+                        <td><Button onClick={() => {handleDeleteRecord(record.id)}} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
                     </tr>
                 ))}
                 </tbody>

@@ -29,17 +29,17 @@ const formValid = (name, description, os, arch) => {
     return name !== '' && os !== '' && arch !== '';
 }
 
-const MachineCreationForm = () => {
+const MachineCreationForm = (props) => {
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
 
     const [formOK, setFormOK] = useState(false);
     const [submitActive, setSubmitActive] = useState(false);
 
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [os, setOS] = useState('');
-    const [arch, setArch] = useState('');
+    const [name, setName] = useState(props.machine?.name ?? '');
+    const [description, setDescription] = useState(props.machine?.description ?? '');
+    const [os, setOS] = useState(props.machine?.os ?? '');
+    const [arch, setArch] = useState(props.machine?.arch ?? '');
 
     useEffect(() => {
         setFormOK(formValid(name, description, os, arch));
@@ -49,29 +49,36 @@ const MachineCreationForm = () => {
         event.preventDefault();
 
         if (!formOK) {
-            return
+            return;
+        }
+
+        var method = 'POST';
+        var endpoint = org+'/machines/';
+        if (props.id) {
+            method = 'PUT';
+            endpoint = org+'/machines/'+props.id+'/';
         }
 
         setSubmitActive(true);
 
-        doApiCall(token, 'POST', org+'/machines/', {name: name, description: description, os: os, arch: arch})
+        doApiCall(token, method, endpoint, {name: name, description: description, os: os, arch: arch})
             .then(data => {
                 setSubmitActive(false);
                 if (data.code === 200) {
-                    console.log('success POSTing data:', data.payload);
+                    console.log('success submitting data:', data.payload);
                 } else {
-                    console.error('failed to POST data:', data.payload);
+                    console.error('failed to submit data:', data.payload);
                 }
             })
             .catch(e => {
-                console.error('error posting form:', e);
+                console.error('error submitting form:', e);
             });
     };
 
     return (
         <>
         { submitActive ? (
-            <Spinner animation="border" variant="primary" />
+            <Spinner animation='border' variant='primary' />
         ) : (
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
@@ -94,7 +101,7 @@ const MachineCreationForm = () => {
                     />
                     <Form.Text className='text-muted'>(Optional) description for machine</Form.Text>
                 </Form.Group>
-                    <Form.Group>
+                <Form.Group>
                     <Form.Label>OS</Form.Label>
                     <Form.Control
                         type='text'

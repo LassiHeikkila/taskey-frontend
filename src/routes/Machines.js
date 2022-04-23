@@ -20,15 +20,22 @@ import { doApiCall } from '../lib/api';
 
 const Machines = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [showEditForm, setShowEditForm] = useState(false);
 
     const handleCloseCreateForm = () => setShowCreateForm(false);
     const handleOpenCreateForm = () => setShowCreateForm(true);
+
+    const handleCloseEditForm = () => setShowEditForm(false);
+    const handleOpenEditForm = () => setShowEditForm(true);
 
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
     const role = useSelector(selectRole);
 
     const [machines, setMachines] = useState([]);
+
+    // for edit form
+    const [selectedMachine, setSelectedMachine] = useState({});
 
     const { status, data, error, isFetching } = useQuery('machines', () => doApiCall(token, 'GET', org+'/machines/').then(data => data.payload));
 
@@ -76,8 +83,8 @@ const Machines = () => {
                             <td>{machine.description}</td>
                             <td>{machine.os}</td>
                             <td>{machine.arch}</td>
-                            <td><Button onClick={console.info('i want to edit!')} disabled={!hasRole(role, RoleAdministrator)}>Edit</Button></td>
-                            <td><Button onClick={console.info('i want to delete!')} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
+                            <td><Button onClick={() => {setSelectedMachine(machine); handleOpenEditForm()}} disabled={!hasRole(role, RoleAdministrator)}>Edit</Button></td>
+                            <td><Button onClick={() => {console.info('i want to delete!')}} disabled={!hasRole(role, RoleAdministrator)}>Delete</Button></td>
                         </tr>
                     ))}
                     </tbody>
@@ -86,6 +93,11 @@ const Machines = () => {
             <Modal show={showCreateForm} onHide={handleCloseCreateForm}>
                 <Modal.Body>
                     <MachineCreationForm />
+                </Modal.Body>
+            </Modal>
+            <Modal show={showEditForm} onHide={handleCloseEditForm}>
+                <Modal.Body>
+                    <MachineCreationForm id={selectedMachine.name} machine={selectedMachine} />
                 </Modal.Body>
             </Modal>
         </Container>

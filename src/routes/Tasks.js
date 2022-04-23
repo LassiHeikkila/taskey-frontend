@@ -36,15 +36,23 @@ const getHighlightLanguage = (interpreter) => {
 
 const Tasks = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [showEditForm, setShowEditForm] = useState(false);
 
     const handleCloseCreateForm = () => setShowCreateForm(false);
     const handleOpenCreateForm = () => setShowCreateForm(true);
+
+    const handleCloseEditForm = () => setShowEditForm(false);
+    const handleOpenEditForm = () => setShowEditForm(true);
 
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
     const role = useSelector(selectRole);
 
     const [tasks, setTasks] = useState([]);
+
+    // for edit form
+    const [selectedTask, setSelectedTask] = useState({});
+
     const [cmdTasks, setCmdTasks] = useState([]);
     const [scriptTasks, setScriptTasks] = useState([]);
 
@@ -103,8 +111,8 @@ const Tasks = () => {
                                     {task.content.program + ' ' + task.content.args.join(' ')}
                                 </SyntaxHighlighter>
                             </td>
-                            <td><Button onClick={console.info('i want to edit!')} disabled={!hasRole(role, RoleMaintainer)}>Edit</Button></td>
-                            <td><Button onClick={console.info('i want to delete!')} disabled={!hasRole(role, RoleMaintainer)}>Delete</Button></td>
+                            <td><Button onClick={() => {setSelectedTask(task); handleOpenEditForm()}} disabled={!hasRole(role, RoleMaintainer)}>Edit</Button></td>
+                            <td><Button onClick={() => {console.info('i want to delete!')}} disabled={!hasRole(role, RoleMaintainer)}>Delete</Button></td>
                         </tr>
                     ))}
                     </tbody>
@@ -135,8 +143,8 @@ const Tasks = () => {
                                     {task.content.script}
                                 </SyntaxHighlighter>
                             </td>
-                            <td><Button onClick={console.info('i want to edit!')} disabled={!hasRole(role, RoleMaintainer)}>Edit</Button></td>
-                            <td><Button onClick={console.info('i want to delete!')} disabled={!hasRole(role, RoleMaintainer)}>Delete</Button></td>
+                            <td><Button onClick={() => {setSelectedTask(task); handleOpenEditForm()}} disabled={!hasRole(role, RoleMaintainer)}>Edit</Button></td>
+                            <td><Button onClick={() => {console.info('i want to delete!')}} disabled={!hasRole(role, RoleMaintainer)}>Delete</Button></td>
                         </tr>
                     ))}
                     </tbody>
@@ -146,6 +154,11 @@ const Tasks = () => {
             <Modal show={showCreateForm} onHide={handleCloseCreateForm}>
                 <Modal.Body>
                     <TaskCreationForm />
+                </Modal.Body>
+            </Modal>
+            <Modal show={showEditForm} onHide={handleCloseEditForm}>
+                <Modal.Body>
+                    <TaskCreationForm id={selectedTask.name} task={selectedTask} />
                 </Modal.Body>
             </Modal>
         </Container>
