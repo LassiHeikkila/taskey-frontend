@@ -1,3 +1,8 @@
+# Taskey Frontend
+Frontend is deployed on [Heroku](https://taskey-frontend.herokuapp.com/).
+
+It may take some time for the page to load when Heroku has shut off the app after a long idle period. Please be patient :)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
