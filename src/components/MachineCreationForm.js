@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useQueryClient } from 'react-query';
 
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -32,6 +33,8 @@ const formValid = (name, description, os, arch) => {
 const MachineCreationForm = (props) => {
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
+
+    const queryClient = useQueryClient();
 
     const [formOK, setFormOK] = useState(false);
     const [submitActive, setSubmitActive] = useState(false);
@@ -66,12 +69,14 @@ const MachineCreationForm = (props) => {
                 setSubmitActive(false);
                 if (data.code === 200) {
                     console.log('success submitting data:', data.payload);
+                    queryClient.invalidateQueries(['machines']);
                 } else {
                     console.error('failed to submit data:', data.payload);
                 }
             })
             .catch(e => {
-                console.error('error submitting form:', e);
+                setSubmitActive(false);
+                console.error('error submitting form:', e.message);
             });
     };
 

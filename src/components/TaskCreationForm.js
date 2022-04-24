@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useQueryClient } from 'react-query';
 
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -25,6 +26,8 @@ import { doApiCall } from '../lib/api';
 const TaskCreationForm = (props) => {
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
+
+    const queryClient = useQueryClient();
 
     const [formOK, setFormOK] = useState(false);
     const [submitActive, setSubmitActive] = useState(false);
@@ -105,12 +108,14 @@ const TaskCreationForm = (props) => {
                 setSubmitActive(false);
                 if (data.code === 200) {
                     console.log('success submitting data:', data);
+                    queryClient.invalidateQueries(['tasks']);
                 } else {
                     console.error('failed to submit data:', data);
                 }
             })
             .catch(e => {
-                console.error('error submitting form:', e);
+                setSubmitActive(false);
+                console.error('error submitting form:', e.message);
             });
     };
 
