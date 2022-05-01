@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
@@ -10,6 +10,8 @@ import { doApiCall } from '../lib/api';
 import { hasRole, RoleAdministrator } from '../lib/roles';
 
 const RecordsTable = ({machine}) => {
+    const queryClient = useQueryClient();
+    
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
     const role = useSelector(selectRole);
@@ -39,7 +41,9 @@ const RecordsTable = ({machine}) => {
             token,
             'DELETE',
             org + '/machines/' + machine + '/records/' + recordID.toString() + '/'
-        ).then()
+        ).then(
+            queryClient.invalidateQueries(['records',machine]);
+        )
     });
 
     return (
