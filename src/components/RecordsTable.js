@@ -49,7 +49,6 @@ const RecordsTable = ({machine}) => {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Machine</th>
                         <th>Task</th>
                         <th>Timestamp</th>
                         <th>Status</th>
@@ -61,7 +60,6 @@ const RecordsTable = ({machine}) => {
                 {records.map((record) => (
                     <tr key={record.id}>
                         <td>{record.id}</td>
-                        <td>{record.machineName}</td>
                         <td>{record.taskName}</td>
                         <td>{record.executedAt}</td>
                         <td>{record.status}</td>
