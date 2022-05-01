@@ -11,7 +11,7 @@ import { hasRole, RoleAdministrator } from '../lib/roles';
 
 const RecordsTable = ({machine}) => {
     const queryClient = useQueryClient();
-    
+
     const token = useSelector(selectToken);
     const org = useSelector(selectOrg);
     const role = useSelector(selectRole);
@@ -41,9 +41,9 @@ const RecordsTable = ({machine}) => {
             token,
             'DELETE',
             org + '/machines/' + machine + '/records/' + recordID.toString() + '/'
-        ).then(
+        ).then(() => {
             queryClient.invalidateQueries(['records',machine]);
-        )
+        })
     });
 
     return (
