@@ -5,7 +5,7 @@ It may take some time for the page to load when Heroku has shut off the app afte
 
 Demo:
 
-https://github.com/LassiHeikkila/taskey-frontend/blob/c70a89d15ebe3eae0fbbefbb7992f6bcf0edcf11/uploads/taskey-frontend-demo.mov
+https://user-images.githubusercontent.com/10546142/167459054-75d59106-987d-479f-b03e-617cea893165.mov
 
 # Getting Started with Create React App
 
