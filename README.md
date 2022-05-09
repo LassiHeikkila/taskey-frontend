@@ -3,7 +3,7 @@ Frontend is deployed on [Heroku](https://taskey-frontend.herokuapp.com/).
 
 It may take some time for the page to load when Heroku has shut off the app after a long idle period. Please be patient :)
 
-Demo:
+## Demo
 
 https://user-images.githubusercontent.com/10546142/167459054-75d59106-987d-479f-b03e-617cea893165.mov
 
